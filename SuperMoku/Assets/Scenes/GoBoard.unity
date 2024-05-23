@@ -242,6 +242,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634e59591df9bd44e894bf5a5cbd3a6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stones:
+  - {fileID: 8149032843607210510, guid: 1003d234396b6674b90c7d7b2af88936, type: 3}
+  - {fileID: 6128660245973726802, guid: b3c63bca340ff2040b79a608841700c9, type: 3}
 --- !u!1 &1204716249
 GameObject:
   m_ObjectHideFlags: 0
