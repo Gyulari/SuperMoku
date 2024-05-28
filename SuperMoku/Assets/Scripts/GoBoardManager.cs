@@ -22,50 +22,32 @@ class GoBoard
 
 public class GoBoardManager : MonoBehaviour
 {
-    Vector3 mousePos;
-
     GoBoard goBoard;
 
     public List<GameObject> stones;
+    public GameObject cursorStone;
 
-    GameObject cursorStone;
-
-    int count = 0;
+    TurnManager _TurnManager;
 
     void Start()
     {
         goBoard = new GoBoard(new StoneType[15, 15]);
-        cursorStone = Instantiate(stones[2], transform);
+        _TurnManager = new TurnManager();
+
+        cursorStone = Instantiate(cursorStone, transform);
     }
 
     void Update()
     {
         (int x, int y) gridIndex = MousePosToGridIndex(Input.mousePosition);
 
-        if(gridIndex.x >= 0 && gridIndex.y >= 0 && gridIndex.x < 15 && gridIndex.y < 15){
-            if (goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
-                // goBoard.m_Grid[gridIndex.x, gridIndex.y] = StoneType.Black;
-                cursorStone.SetActive(true);
-                cursorStone.transform.position = new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f);
-                // stone = Instantiate(stones[(int)StoneType.Black - 1], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
-                // cursorStone.transform.parent = gameObject.transform;
-                // Debug.Log("[" + gridIndex.x + "][" + gridIndex.y + "]");
-            }
-        }
-        else {
-            cursorStone.SetActive(false);
-        }
+        ActivateCursorStone(gridIndex);
 
         if (Input.GetMouseButtonDown(0) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
-            if (count % 2 == 0) {
-                goBoard.m_Grid[gridIndex.x, gridIndex.y] = StoneType.Black;
-                GameObject stone = Instantiate(stones[(int)StoneType.Black - 1], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
-            }
-            else {
-                goBoard.m_Grid[gridIndex.x, gridIndex.y] = StoneType.White;
-                GameObject stone = Instantiate(stones[(int)StoneType.White - 1], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
-            }
-            count++;
+            goBoard.m_Grid[gridIndex.x, gridIndex.y] = (StoneType)(_TurnManager.CurrentTurn + 1);            
+            GameObject stone = Instantiate(stones[(int)_TurnManager.CurrentTurn], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
+
+            _TurnManager.ChangeTurn();
         }
     }
 
@@ -79,5 +61,31 @@ public class GoBoardManager : MonoBehaviour
         int y = Mathf.CeilToInt((mousePos.z + 0.15f * boardCameraRatio) / (0.02f * boardCameraRatio));
 
         return (x-1, y-1);
+    }
+
+    private void ActivateCursorStone((int x, int y) gridIndex)
+    {
+        if (ValidateGridIndex(gridIndex) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
+            cursorStone.SetActive(true);
+            cursorStone.transform.position = new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f);
+
+            if (_TurnManager.CurrentTurn == TurnManager.Turn.Black) {
+                cursorStone.GetComponent<MeshRenderer>().material.color = new Color(0f, 0f, 0f, 0.25f);
+            }
+            else if (_TurnManager.CurrentTurn == TurnManager.Turn.White) {
+                cursorStone.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, 0.25f);
+            }
+        }
+        else {
+            cursorStone.SetActive(false);
+        }
+    }
+
+    private bool ValidateGridIndex((int x, int y) gridIndex)
+    {
+        if (gridIndex.x >= 0 && gridIndex.y >= 0 && gridIndex.x < 15 && gridIndex.y < 15)
+            return true;
+        else
+            return false;
     }
 }
