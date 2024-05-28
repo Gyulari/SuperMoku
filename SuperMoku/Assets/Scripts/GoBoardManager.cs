@@ -264,7 +264,19 @@ public class GoBoardManager : MonoBehaviour
     private void Occupying(OccupyingPlayer[,] occup, int x, int y)
     {
         if (occup[x, y] != OccupyingPlayer.None) {
+            Debug.Log("OCCUPYING");
             GameObject flag = Instantiate(flags[(int)occup[x,y] - 1], new Vector3((x - 7) / 15f * 10f, 0.05f, (y - 7) / 15f * 10f), Quaternion.identity);
+            StartCoroutine(RotateCoroutine(flag));
+        }
+        
+    }
+
+    private IEnumerator RotateCoroutine(GameObject flag)
+    {
+        for(float k = 0f; k <= 180f;) {
+            k += 1.0f;
+            flag.transform.rotation = Quaternion.Euler(90f - k, 0, 0);
+            yield return new WaitForSecondsRealtime(0.000025f);
         }
         
     }

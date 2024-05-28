@@ -247,7 +247,7 @@ MonoBehaviour:
   - {fileID: 6128660245973726802, guid: b3c63bca340ff2040b79a608841700c9, type: 3}
   cursorStone: {fileID: 8149032843607210510, guid: c0fc5b34e7dfbd2448866774e218a2ed, type: 3}
   flags:
-  - {fileID: 1260057935949049385, guid: 4768e0baa701bea4a85803f49e030526, type: 3}
+  - {fileID: 2754909809952651151, guid: aaa1db46cbb90f64a9679a022feb187c, type: 3}
   - {fileID: 2894833675825323161, guid: 663169bb6c5105845a85803925504932, type: 3}
 --- !u!1 &1204716249
 GameObject:
