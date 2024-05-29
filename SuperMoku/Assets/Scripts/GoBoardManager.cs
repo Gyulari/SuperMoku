@@ -68,12 +68,14 @@ public class GoBoardManager : MonoBehaviour
 
         ActivateCursorStone(gridIndex);
 
-        if (Input.GetMouseButtonDown(0) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
-            goBoard.m_Grid[gridIndex.x, gridIndex.y] = (StoneType)(_TurnManager.CurrentTurn + 1);            
-            GameObject stone = Instantiate(stones[(int)_TurnManager.CurrentTurn], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
+        if (ValidateGridIndex(gridIndex)) {
+            if (Input.GetMouseButtonDown(0) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
+                goBoard.m_Grid[gridIndex.x, gridIndex.y] = (StoneType)(_TurnManager.CurrentTurn + 1);
+                GameObject stone = Instantiate(stones[(int)_TurnManager.CurrentTurn], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
 
-            CheckGomoku(goBoard.m_Grid, goBoard.m_Occup);
-            _TurnManager.ChangeTurn();
+                CheckGomoku(goBoard.m_Grid, goBoard.m_Occup);
+                _TurnManager.ChangeTurn();
+            }
         }
     }
 
