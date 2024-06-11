@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerStatus : PlayerController
 {
-    private string m_PlayerName;
+    public string m_PlayerName;
 
     public int HP
     {
@@ -12,4 +12,9 @@ public class PlayerStatus : PlayerController
         set { m_HP = value; }
     }
     private int m_HP;
+
+    private void Awake()
+    {
+        m_PlayerName = GameManager.m_GameData.playerName[(int)m_PlayerTurn];
+    }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    private TurnManager.Turn m_PlayerTurn;
+    protected TurnManager.Turn m_PlayerTurn;
 
     protected GameObject m_PlayerStone;
 
