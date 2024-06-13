@@ -8,6 +8,9 @@ public class SteamFriendsManager : MonoBehaviour
     public RawImage pp;
     public TMP_Text playername;
 
+    public Transform friendsContent;
+    public GameObject friendObj;
+
     async void Start()
     {
         if (!SteamClient.IsValid) return;
@@ -33,13 +36,16 @@ public class SteamFriendsManager : MonoBehaviour
         return texture;
     }
 
-    public void InitFriends()
+    public async void InitFriends()
     {
         foreach(var friend in SteamFriends.GetFriends()) {
             Debug.Log(
                 $"{friend.Name}({friend.Id}) | online : {friend.IsOnline} | playing this game : {friend.IsPlayingThisGame}"
                 );
-
+            GameObject f = Instantiate(friendObj, friendsContent);
+            var img = await SteamFriends.GetLargeAvatarAsync(friend.Id);
+            f.GetComponentInChildren<RawImage>().texture = GetTextureFromImage(img.Value);
+            f.GetComponentInChildren<TMP_Text>().text = friend.Name;
         }
     }
 }
