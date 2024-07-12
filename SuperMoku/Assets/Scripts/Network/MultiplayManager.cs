@@ -145,7 +145,7 @@ public class MultiplayManager : MonoBehaviour
         isConnected = false;
     }
 
-    public void AddPlayerToSteamPlayerInfoDict(ulong clientId, string steamName, ulong steamId)
+    public void AddPlayerToSteamPlayerInfo(ulong clientId, string steamName, ulong steamId)
     {
         if (!steamPlayerInfo.ContainsKey(clientId)) {
             SteamPlayerInfo pi = Instantiate(playerCardPrefab, playerFieldBox.transform).GetComponent<SteamPlayerInfo>();
@@ -162,11 +162,11 @@ public class MultiplayManager : MonoBehaviour
             string steamName = sPlayer.Value.GetComponent<SteamPlayerInfo>().steamName;
             ulong clientId = sPlayer.Key;
 
-            NetworkTransmission._instance.UpdateClientsPlayerInfoClientRPC(steamId, steamName, clientId);
+            NetworkTransmission._instance.UpdateClientsInfo_ClientRPC(steamId, steamName, clientId);
         }
     }
 
-    public void RemovePlayerFromDictionary(ulong steamId)
+    public void RemovePlayerFromSteamPlayerInfo(ulong steamId)
     {
         GameObject value = null;
         ulong key = 100;
