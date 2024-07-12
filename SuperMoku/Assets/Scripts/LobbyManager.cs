@@ -8,11 +8,12 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using TMPro;
+using UnityEditor.PackageManager;
 
 public class LobbyManager : MonoBehaviour
 {
     public static Lobby currentLobby;
-
+    public static bool UserInLobby;
     public UnityEvent OnLobbyCreated;
     public UnityEvent OnLobbyJoined;
     public UnityEvent OnLobbyLeave;
@@ -95,6 +96,7 @@ public class LobbyManager : MonoBehaviour
     async void OnLobbyEntered(Lobby lobby)
     {
         Debug.Log("Client joined the lobby");
+        UserInLobby = true;
 
         foreach(var user in inLobby.Values) {
             Destroy(user);
@@ -127,7 +129,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public async Task<bool> CreateLobby()
+    public static async Task<bool> CreateLobby()
     {
         try {
             var createLobbyOutput = await SteamMatchmaking.CreateLobbyAsync();
@@ -152,6 +154,7 @@ public class LobbyManager : MonoBehaviour
     public void LeaveLobby()
     {
         try {
+            UserInLobby = false;
             currentLobby.Leave();
             OnLobbyLeave.Invoke();
             foreach(var user in inLobby.Values) {
