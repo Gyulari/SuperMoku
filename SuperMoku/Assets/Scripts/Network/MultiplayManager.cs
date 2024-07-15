@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Networking.PlayerConnection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -71,7 +70,6 @@ public class MultiplayManager : MonoBehaviour
         }
     }
 
-    /* 구현 마무리 필요 */
     public void HostCreated()
     {
         multiMenu.SetActive(false);
@@ -182,5 +180,23 @@ public class MultiplayManager : MonoBehaviour
         if(value != null) {
             Destroy(value);
         }
+    }
+
+    public bool CheckIfPlayersAreReady()
+    {
+        bool ready = false;
+
+        foreach(KeyValuePair<ulong, GameObject> player in steamPlayerInfo) {
+            if (!player.Value.GetComponent<SteamPlayerInfo>().isReady) {
+                startButton.SetActive(false);
+                return false;
+            }
+            else {
+                startButton.SetActive(true);
+                ready = true;
+            }
+        }
+
+        return ready;
     }
 }

@@ -39,8 +39,8 @@ public class NetworkTransmission : NetworkBehaviour
     public void AddClientToSteamPlayerInfo_ServerRPC(ulong steamId, string steamName, ulong clientId)
     {
         MultiplayManager._instance.SendMessageToChat($"{steamName} has joined", clientId, true);
-        MultiplayManager._instance.AddPlayerToSteamPlayerInfo(clientId, steamName, steamId);
-        MultiplayManager._instance.UpdateClients();
+        MultiplayManager._instance.AddPlayerToSteamPlayerInfo(clientId, steamName, steamId);    // 플레이어 정보 dictionary에 Client 추가
+        MultiplayManager._instance.UpdateClients();    // Client 정보 업데이트
     }
 
     // Client로부터 Client 제거 요청 수신
@@ -56,24 +56,23 @@ public class NetworkTransmission : NetworkBehaviour
     private void RemoveClientFromSteamPlayerInfo_ClientRPC(ulong steamId)
     {
         Debug.Log("Removing Client");
-        MultiplayManager._instance.RemovePlayerFromSteamPlayerInfo(steamId);
+        MultiplayManager._instance.RemovePlayerFromSteamPlayerInfo(steamId);    // 플레이어 정보 dictionary에서 Client 제거
     }
 
     // Server로부터 Client 정보 갱신 요청 수신
     [ClientRpc]
     public void UpdateClientsInfo_ClientRPC(ulong steamId, string steamName, ulong clientId)
     {
-        MultiplayManager._instance.AddPlayerToSteamPlayerInfo(clientId, steamName, steamId);
+        MultiplayManager._instance.AddPlayerToSteamPlayerInfo(clientId, steamName, steamId);    // 플레이어 정보 dictionary에 Client 추가
     }
 
-    // server에 clientId에 해당하는 Client의 ready state를 전송
+    // Server에 clientId에 해당하는 Client의 ready state를 전송
     [ServerRpc(RequireOwnership = false)]
     public void SetClientReadyState_ServerRPC(bool ready, ulong clientId)
     {
-        UpdateClientsReadyState_ClientRPC(ready, clientId);
+        UpdateClientsReadyState_ClientRPC(ready, clientId);    // Client들의 ready 상태 업데이트
     }
 
-    /* 구현 마무리 필요 */
     // clientId에 해당하는 Client의 ready state를 업데이트
     [ClientRpc]
     private void UpdateClientsReadyState_ClientRPC(bool ready, ulong clientId)
@@ -83,7 +82,7 @@ public class NetworkTransmission : NetworkBehaviour
                 player.Value.GetComponent<SteamPlayerInfo>().isReady = ready;
                 // player.Value.GetComponent<SteamPlayerInfo>().readyImage.SetActive(ready); // ---------- 구현 필요
                 if (NetworkManager.Singleton.IsHost) {
-                    // Debug.Log(MultiplayManager._instance.CheckIfPlayersAreReday()); // ---------- 구현 필요
+                    Debug.Log(MultiplayManager._instance.CheckIfPlayersAreReady());
                 }
             }
         }

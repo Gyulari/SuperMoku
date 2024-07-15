@@ -7,6 +7,7 @@ public class FriendObject : MonoBehaviour
 {
     public SteamId steamId;
 
+    /*
     public async void Invite()
     {
         if (LobbyManager.UserInLobby) {
@@ -19,4 +20,5 @@ public class FriendObject : MonoBehaviour
             }
         }
     }
+    */
 }
