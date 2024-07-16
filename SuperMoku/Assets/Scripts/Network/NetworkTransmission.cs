@@ -12,6 +12,7 @@ public class NetworkTransmission : NetworkBehaviour
     {
         if (_instance == null) {
             _instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else {
             Destroy(gameObject);
@@ -38,7 +39,7 @@ public class NetworkTransmission : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void AddClientToSteamPlayerInfo_ServerRPC(ulong steamId, string steamName, ulong clientId)
     {
-        MultiplayManager._instance.SendMessageToChat($"{steamName} has joined", clientId, true);
+        MultiplayManager._instance.SendMessageToChat($"{steamName} 님이 게임에 참가했습니다.", clientId, true);
         MultiplayManager._instance.AddPlayerToSteamPlayerInfo(clientId, steamName, steamId);    // 플레이어 정보 dictionary에 Client 추가
         MultiplayManager._instance.UpdateClients();    // Client 정보 업데이트
     }
@@ -80,7 +81,8 @@ public class NetworkTransmission : NetworkBehaviour
         foreach(KeyValuePair<ulong, GameObject> player in MultiplayManager._instance.steamPlayerInfo) {
             if(player.Key == clientId) {
                 player.Value.GetComponent<SteamPlayerInfo>().isReady = ready;
-                // player.Value.GetComponent<SteamPlayerInfo>().readyImage.SetActive(ready); // ---------- 구현 필요
+                player.Value.GetComponent<SteamPlayerInfo>().readyImage.SetActive(ready);
+                
                 if (NetworkManager.Singleton.IsHost) {
                     Debug.Log(MultiplayManager._instance.CheckIfPlayersAreReady());
                 }

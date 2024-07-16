@@ -1,17 +1,23 @@
+using Steamworks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SteamPlayerInfo : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Text playerName;
+    public TMP_Text playerName;
+    public RawImage playerImage;
     public string steamName;
     public ulong steamId;
-
+   
+    public GameObject readyImage;
     public bool isReady;
 
     private void Start()
     {
+        readyImage.SetActive(false);
         playerName.text = steamName;
+        // var img = await SteamFriends.GetLargeAvatarAsync(steamId);
+        // playerImage.texture = SteamFriendsManager.GetTextureFromImage(img.Value);
     }
 }

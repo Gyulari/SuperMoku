@@ -14,7 +14,7 @@ public class GameNetworkManager : MonoBehaviour
     private FacepunchTransport transport = null;
     public Lobby? currentLobby { get; private set; } = null;
 
-    public static bool userInLobby;
+    public bool inLobby;
 
     // Singleton Pattern 구현
     void Awake()
@@ -34,10 +34,10 @@ public class GameNetworkManager : MonoBehaviour
 
         SteamMatchmaking.OnLobbyCreated += OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+        SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
         SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyInvite += OnLobbyInvite;
-        SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
         SteamFriends.OnGameLobbyJoinRequested += OnGameLobbyJoinRequested;
     }
 
@@ -45,10 +45,10 @@ public class GameNetworkManager : MonoBehaviour
     {
         SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= OnLobbyEntered;
+        SteamMatchmaking.OnLobbyGameCreated -= OnLobbyGameCreated;
         SteamMatchmaking.OnLobbyMemberJoined -= OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyInvite -= OnLobbyInvite;
-        SteamMatchmaking.OnLobbyGameCreated -= OnLobbyGameCreated;
         SteamFriends.OnGameLobbyJoinRequested -= OnGameLobbyJoinRequested;
     }
 
@@ -63,6 +63,7 @@ public class GameNetworkManager : MonoBehaviour
     {
         NetworkManager.Singleton.OnServerStarted += OnServerStarted;
         NetworkManager.Singleton.StartHost();
+        inLobby = true;
 
         // Lobby 생성
         currentLobby = await SteamMatchmaking.CreateLobbyAsync();
@@ -80,14 +81,14 @@ public class GameNetworkManager : MonoBehaviour
 
         // NetworkManager를 통해 Client로 Server에 연결
         if (NetworkManager.Singleton.StartClient()) {
-            Debug.Log("Client has started");
+            Debug.Log("Client started.");
         }
     }
 
     // Host로 Server 시작 시 호출
     private void OnServerStarted()
     {
-        Debug.Log("Host started");
+        Debug.Log("Host started.");
         MultiplayManager._instance.HostCreated();
     }
 
@@ -115,7 +116,7 @@ public class GameNetworkManager : MonoBehaviour
         MultiplayManager._instance.ClearChat();
         MultiplayManager._instance.Disconnected();
 
-        Debug.Log("Disconnected");
+        Debug.Log("Disconnected.");
     }
 
     // Client가 Server에 연결될 시 호출되는 Callback 함수
@@ -142,14 +143,14 @@ public class GameNetworkManager : MonoBehaviour
     private void OnLobbyCreated(Result result, Lobby lobby)
     {
         if(result != Result.OK) {
-            Debug.Log("Lobby was not created");
+            Debug.LogWarning("Lobby was not created.");
             return;
         }
 
         lobby.SetPublic();  // 공개 로비로 설정
         lobby.SetJoinable(true);  // 로비를 입장 가능으로 설정
         lobby.SetGameServer(lobby.Owner.Id);  // 로비의 Owner가 로비와 연관된 게임 서버를 설정
-        Debug.Log($"Lobby created by {SteamClient.Name}");
+        Debug.Log($"Lobby was created by {SteamClient.Name}");
         
         // Server로 Client 추가 요청 송신
         NetworkTransmission._instance.AddClientToSteamPlayerInfo_ServerRPC(SteamClient.SteamId, SteamClient.Name, NetworkManager.Singleton.LocalClientId);
@@ -170,14 +171,14 @@ public class GameNetworkManager : MonoBehaviour
     // 플레이어가 로비에 입장 시 호출되는 함수
     private void OnLobbyMemberJoined(Lobby lobby, Friend steamId)
     {
-        Debug.Log("Member Joins");
+        Debug.Log($"Member {steamId.Name} Joins");
     }
 
     // 플레이어가 로비에서 퇴장할 시 호출되는 함수
     private void OnLobbyMemberLeave(Lobby lobby, Friend steamId)
     {
-        Debug.Log("Member Leaves");
-        MultiplayManager._instance.SendMessageToChat($"{steamId.Name} is left", steamId.Id, true);
+        Debug.Log($"Member {steamId.Name} Leaves");
+        MultiplayManager._instance.SendMessageToChat($"{steamId.Name} 님이 게임을 떠났습니다.", steamId.Id, true);
         NetworkTransmission._instance.RemoveClientFromSteamPlayerInfo_ServerRPC(steamId.Id);    // Server로 Client 정보 제거 요청 송신
     }
 
@@ -191,21 +192,23 @@ public class GameNetworkManager : MonoBehaviour
     private void OnLobbyGameCreated(Lobby lobby, uint ip, ushort port, SteamId steamId)
     {
         Debug.Log("Lobby was created");
-        MultiplayManager._instance.SendMessageToChat($"Lobby was created", NetworkManager.Singleton.LocalClientId, true);
+        MultiplayManager._instance.SendMessageToChat($"대기실을 생성했습니다.", NetworkManager.Singleton.LocalClientId, true);
     }
 
     // 플레이어가 로비 참여 요청을 보낼 시 호출되는 함수
     private async void OnGameLobbyJoinRequested(Lobby lobby, SteamId steamId)
     {
+        Debug.Log("Join Request");
+
         RoomEnter joinedLobby = await lobby.Join();
 
         if(joinedLobby != RoomEnter.Success) {
-            Debug.Log("Failed to create lobby");
+            Debug.LogWarning("Failed to join to lobby");
         }
         else {
             currentLobby = lobby;
             MultiplayManager._instance.ConnectedAsClient();    // Client로 로비 Server에 접속
-            Debug.Log("Join to Lobby");
+            Debug.Log("Join to lobby");
         }
     }
 }

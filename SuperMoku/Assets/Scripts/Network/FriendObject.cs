@@ -7,18 +7,10 @@ public class FriendObject : MonoBehaviour
 {
     public SteamId steamId;
 
-    /*
-    public async void Invite()
+    public void Invite()
     {
-        if (LobbyManager.UserInLobby) {
-            LobbyManager.currentLobby.InviteFriend(steamId);
-        }
-        else {
-            bool result = await LobbyManager.CreateLobby();
-            if (result) {
-                LobbyManager.currentLobby.InviteFriend(steamId);
-            }
+        if (GameNetworkManager._instance.currentLobby.HasValue && GameNetworkManager._instance.inLobby) {
+            GameNetworkManager._instance.currentLobby.Value.InviteFriend(steamId);
         }
     }
-    */
 }

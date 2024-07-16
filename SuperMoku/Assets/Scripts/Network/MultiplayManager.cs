@@ -16,11 +16,15 @@ public class MultiplayManager : MonoBehaviour
     private GameObject chatPanel, textObject;
     [SerializeField]
     private TMP_InputField chatInputField;
+    private bool onChatPanel;
 
     [SerializeField]
-    private GameObject playerFieldBox, playerCardPrefab;
+    private List<GameObject> playerCardField;
     [SerializeField]
-    private GameObject readyButton, NotreadyButton, startButton;
+    private GameObject playerCardPrefab;
+
+    [SerializeField]
+    private GameObject readyButton, readyCancelButton, startButton;
 
     // Client들의 정보를 담은 Dictionary
     public Dictionary<ulong, GameObject> steamPlayerInfo = new Dictionary<ulong, GameObject>();
@@ -38,6 +42,7 @@ public class MultiplayManager : MonoBehaviour
     {
         if (_instance == null) {
             _instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else {
             Destroy(gameObject);
@@ -46,26 +51,45 @@ public class MultiplayManager : MonoBehaviour
 
     private void Update()
     {
-        // 채팅 message가 있는 경우
-        if(chatInputField.text != "") {
+        // 채팅창이 비활성화 상태일 때
+        if (!onChatPanel) {
             if (Input.GetKeyDown(KeyCode.Return)) {
-                // 아무것도 입력하지 않을 시 채팅 입력 창 비활성화
-                if(chatInputField.text == " ") {
-                    chatInputField.text = "";
-                    chatInputField.DeactivateInputField();
-                    return;
-                }
-                // 채팅 message를 Server로 전송
-                NetworkTransmission._instance.SendChatMessage_ServerRPC(chatInputField.text, ownClientId);
+                onChatPanel = true;
+                chatPanel.SetActive(true);
+                chatInputField.ActivateInputField();
                 chatInputField.text = "";
             }
         }
-        // 채팅 message가 없는 경우
+        // 채팅창이 활성화 상태일 때
         else {
-            // Enter키를 통해 채팅 입력 창 활성화
+            // 엔터키 입력 시
             if (Input.GetKeyDown(KeyCode.Return)) {
-                chatInputField.ActivateInputField();
-                chatInputField.text = " ";
+                // 입력한 내용이 없다면
+                if (chatInputField.text == "") {
+                    chatInputField.text = "";
+                    chatInputField.DeactivateInputField();
+                }
+                // 입력한 내용이 있다면
+                else {
+                    // 채팅 message를 Server로 전송
+                    NetworkTransmission._instance.SendChatMessage_ServerRPC(chatInputField.text, ownClientId);
+                    chatInputField.text = "";
+                }
+            }
+            // ESC키 입력 시
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                // 입력 중이었다면
+                if(chatInputField.interactable) {
+                    chatInputField.text = "";
+                    chatInputField.DeactivateInputField();
+                }
+                // 입력 중이 아니었다면
+                else {
+                    chatInputField.text = "";
+                    chatInputField.DeactivateInputField();
+                    chatPanel.SetActive(false);
+                    onChatPanel = false;
+                }
             }
         }
     }
@@ -99,7 +123,7 @@ public class MultiplayManager : MonoBehaviour
             chatMessageList.Remove(chatMessageList[0]);
         }
         ChatMessage newChatMessage = new ChatMessage();
-        string senderName = "System";
+        string senderName = "[시스템]";
 
         if (!isServer) {
             if (steamPlayerInfo.ContainsKey(sender)) {
@@ -146,7 +170,7 @@ public class MultiplayManager : MonoBehaviour
     public void AddPlayerToSteamPlayerInfo(ulong clientId, string steamName, ulong steamId)
     {
         if (!steamPlayerInfo.ContainsKey(clientId)) {
-            SteamPlayerInfo pi = Instantiate(playerCardPrefab, playerFieldBox.transform).GetComponent<SteamPlayerInfo>();
+            SteamPlayerInfo pi = Instantiate(playerCardPrefab, playerCardField[steamPlayerInfo.Count].transform).GetComponent<SteamPlayerInfo>();
             pi.steamId = steamId;
             pi.steamName = steamName;
             steamPlayerInfo.Add(clientId, pi.gameObject);
