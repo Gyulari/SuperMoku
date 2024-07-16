@@ -2,7 +2,7 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Steamworks.ServerList;
+using DG.Tweening;
 
 public class SteamFriendsManager : MonoBehaviour
 {
@@ -58,5 +58,10 @@ public class SteamFriendsManager : MonoBehaviour
     {
         var img = await SteamFriends.GetLargeAvatarAsync(SteamClient.SteamId);
         return GetTextureFromImage(img.Value);
+    }
+
+    public void FriendsListDrawerFunc(float x)
+    {
+        gameObject.GetComponent<RectTransform>().DOAnchorPosX(x, 0.3f);
     }
 }
