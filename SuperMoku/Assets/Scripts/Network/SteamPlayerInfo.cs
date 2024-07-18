@@ -13,11 +13,11 @@ public class SteamPlayerInfo : MonoBehaviour
     public GameObject readyImage;
     public bool isReady;
 
-    private void Start()
+    private async void Start()
     {
         readyImage.SetActive(false);
         playerName.text = steamName;
-        // var img = await SteamFriends.GetLargeAvatarAsync(steamId);
-        // playerImage.texture = SteamFriendsManager.GetTextureFromImage(img.Value);
+        var img = await SteamFriends.GetLargeAvatarAsync(steamId);
+        playerImage.texture = SteamFriendsManager.GetTextureFromImage(img.Value);
     }
 }

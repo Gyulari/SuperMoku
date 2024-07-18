@@ -5,5 +5,5 @@ using UnityEngine;
 [System.Serializable]
 public class GameData
 {
-    public string[] playerName = new string[2];
+    public string characterName = "";
 }

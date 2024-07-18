@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -206,9 +207,17 @@ public class MultiplayManager : MonoBehaviour
         }
     }
 
+    public void SetReadyState(bool ready)
+    {
+        NetworkTransmission._instance.SetClientReadyState_ServerRPC(ready, ownClientId);
+    }
+
     public bool CheckIfPlayersAreReady()
     {
         bool ready = false;
+
+        if (steamPlayerInfo.Count != 2)
+            return false;
 
         foreach(KeyValuePair<ulong, GameObject> player in steamPlayerInfo) {
             if (!player.Value.GetComponent<SteamPlayerInfo>().isReady) {
@@ -222,5 +231,10 @@ public class MultiplayManager : MonoBehaviour
         }
 
         return ready;
+    }
+
+    public void StartGameByHost()
+    {
+        NetworkTransmission._instance.LoadScene_ServerRPC(2);
     }
 }

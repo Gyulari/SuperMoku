@@ -15,6 +15,6 @@ public class PlayerStatus : PlayerController
 
     private void Awake()
     {
-        m_PlayerName = GameManager.m_GameData.playerName[(int)m_PlayerTurn];
+        m_PlayerName = GameManager.m_GameData.characterName;
     }
 }

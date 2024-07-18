@@ -89,4 +89,16 @@ public class NetworkTransmission : NetworkBehaviour
             }
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void LoadScene_ServerRPC(int sceneNumber)
+    {
+        LoadScene_ClientRPC(sceneNumber);
+    }
+
+    [ClientRpc]
+    public void LoadScene_ClientRPC(int sceneNumber)
+    {
+        GameManager._instance.LoadScene(sceneNumber);
+    }
 }

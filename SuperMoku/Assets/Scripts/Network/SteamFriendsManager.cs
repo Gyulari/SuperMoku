@@ -12,6 +12,9 @@ public class SteamFriendsManager : MonoBehaviour
     public Transform friendsListContent;
     public GameObject friendObj;
 
+    [SerializeField]
+    private int maxNameLength;
+
     async void Start()
     {
         if (!SteamClient.IsValid) return;

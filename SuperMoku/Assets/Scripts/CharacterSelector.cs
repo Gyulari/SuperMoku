@@ -6,18 +6,12 @@ using UnityEngine.UI;
 
 public class CharacterSelector : MonoBehaviour
 {
-    int m_SelectCount = 0;
+    private bool isSelected = false;
 
     public void SelectCharacter(GameObject character)
     {
-        character.GetComponent<Button>().interactable = false;
-        GameManager.m_GameData.playerName[m_SelectCount] = character.name;
-
-        m_SelectCount++;
-
-        if(m_SelectCount == 2) {
-            GameManager._instance.SaveData();
-            GameManager._instance.LoadScene(2);
-        }
+        isSelected = !isSelected;
+        character.transform.GetChild(0).gameObject.SetActive(isSelected);
+        GameManager.m_GameData.characterName = character.name;
     }
 }
