@@ -25,10 +25,12 @@ class GoBoard
 
     public GoBoard()
     {
-        m_Grid = InitGrid();
+        // m_Grid = InitGrid();
+        m_Grid = new StoneType[15, 15];
         m_Occup = new OccupyingPlayer[15, 15];
     }
 
+    /*
     private StoneType[,] InitGrid()
     {
         StoneType[,] grid = new StoneType[15, 15];
@@ -41,6 +43,7 @@ class GoBoard
 
         return grid;
     }
+    */
 }
 
 public class GoBoardManager : MonoBehaviour
@@ -68,12 +71,14 @@ public class GoBoardManager : MonoBehaviour
 
         ActivateCursorStone(gridIndex);
 
-        if (Input.GetMouseButtonDown(0) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
-            goBoard.m_Grid[gridIndex.x, gridIndex.y] = (StoneType)(_TurnManager.CurrentTurn + 1);            
-            GameObject stone = Instantiate(stones[(int)_TurnManager.CurrentTurn], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
+        if (ValidateGridIndex(gridIndex)) {
+            if (Input.GetMouseButtonDown(0) && goBoard.m_Grid[gridIndex.x, gridIndex.y] == StoneType.Empty) {
+                goBoard.m_Grid[gridIndex.x, gridIndex.y] = (StoneType)(_TurnManager.CurrentTurn + 1);
+                GameObject stone = Instantiate(stones[(int)_TurnManager.CurrentTurn], new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f), Quaternion.identity);
 
-            CheckGomoku(goBoard.m_Grid, goBoard.m_Occup);
-            _TurnManager.ChangeTurn();
+                CheckGomoku(goBoard.m_Grid, goBoard.m_Occup);
+                _TurnManager.ChangeTurn();
+            }
         }
     }
 
@@ -95,10 +100,10 @@ public class GoBoardManager : MonoBehaviour
             cursorStone.SetActive(true);
             cursorStone.transform.position = new Vector3((gridIndex.x - 7) / 15f * 10f, 0.05f, (gridIndex.y - 7) / 15f * 10f);
 
-            if (_TurnManager.CurrentTurn == TurnManager.Turn.Black) {
+            if (_TurnManager.CurrentTurn == TurnManager.Turn.First) {
                 cursorStone.GetComponent<MeshRenderer>().material.color = new Color(0f, 0f, 0f, 0.25f);
             }
-            else if (_TurnManager.CurrentTurn == TurnManager.Turn.White) {
+            else if (_TurnManager.CurrentTurn == TurnManager.Turn.Second) {
                 cursorStone.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, 0.25f);
             }
         }

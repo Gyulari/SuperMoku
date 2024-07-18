@@ -6,21 +6,21 @@ public class TurnManager
 {
     public enum Turn
     { 
-        Black,
-        White
+        First,
+        Second
     }
 
     public Turn CurrentTurn
     {
-        get { return curTurn; }
+        get { return m_CurrentTurn; }
     }
-    private Turn curTurn = Turn.Black;
+    private Turn m_CurrentTurn = Turn.First;
 
     public void ChangeTurn()
     {
-        if (curTurn == Turn.Black)
-            curTurn = Turn.White;
+        if (m_CurrentTurn == Turn.First)
+            m_CurrentTurn = Turn.Second;
         else
-            curTurn = Turn.Black;
+            m_CurrentTurn = Turn.First;
     }
 }
