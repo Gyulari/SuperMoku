@@ -12,6 +12,6 @@ public class CharacterSelector : MonoBehaviour
     {
         isSelected = !isSelected;
         character.transform.GetChild(0).gameObject.SetActive(isSelected);
-        GameManager.m_GameData.characterName = character.name;
+        // GameManager.m_GameData.characterName = character.name;
     }
 }

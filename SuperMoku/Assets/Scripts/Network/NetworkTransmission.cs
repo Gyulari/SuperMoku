@@ -1,4 +1,4 @@
-using System.Collections;
+using Steamworks;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,22 +17,6 @@ public class NetworkTransmission : NetworkBehaviour
         else {
             Destroy(gameObject);
         }
-    }
-
-    // Client로부터 채팅 message를 수신
-    [ServerRpc(RequireOwnership = false)]
-    public void SendChatMessage_ServerRPC(string message, ulong sender)
-    {
-        // 수신한 채팅 message를 다른 Client들에게 전송
-        ChatFromServer_ClientRPC(message, sender);
-    }
-
-    // Server로부터 채팅 message를 수신
-    [ClientRpc]
-    private void ChatFromServer_ClientRPC(string message, ulong sender)
-    {
-        // 수신한 채팅 message를 채팅창에 출력
-        MultiplayManager._instance.SendMessageToChat(message, sender, false);
     }
 
     // Client로부터 Client 추가 요청 수신
@@ -78,16 +62,32 @@ public class NetworkTransmission : NetworkBehaviour
     [ClientRpc]
     private void UpdateClientsReadyState_ClientRPC(bool ready, ulong clientId)
     {
-        foreach(KeyValuePair<ulong, GameObject> player in MultiplayManager._instance.steamPlayerInfo) {
-            if(player.Key == clientId) {
+        foreach (KeyValuePair<ulong, GameObject> player in MultiplayManager._instance.steamPlayerInfo) {
+            if (player.Key == clientId) {
                 player.Value.GetComponent<SteamPlayerInfo>().isReady = ready;
                 player.Value.GetComponent<SteamPlayerInfo>().readyImage.SetActive(ready);
-                
+
                 if (NetworkManager.Singleton.IsHost) {
                     Debug.Log(MultiplayManager._instance.CheckIfPlayersAreReady());
                 }
             }
         }
+    }
+
+    // Client로부터 채팅 message를 수신
+    [ServerRpc(RequireOwnership = false)]
+    public void SendChatMessage_ServerRPC(string message, ulong sender)
+    {
+        // 수신한 채팅 message를 다른 Client들에게 전송
+        ChatFromServer_ClientRPC(message, sender);
+    }
+
+    // Server로부터 채팅 message를 수신
+    [ClientRpc]
+    private void ChatFromServer_ClientRPC(string message, ulong sender)
+    {
+        // 수신한 채팅 message를 채팅창에 출력
+        MultiplayManager._instance.SendMessageToChat(message, sender, false);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -101,4 +101,34 @@ public class NetworkTransmission : NetworkBehaviour
     {
         GameManager._instance.LoadScene(sceneNumber);
     }
+
+    /*  
+    [ServerRpc(RequireOwnership = false)]
+    public void SetInitialTurn_ServerRPC()
+    {
+        // 선공 결정
+        bool hostFirst = (Random.value > 0.5f);
+        SetInitialTurn_ClientRPC(hostFirst);
+    }
+
+    [ClientRpc]
+    public void SetInitialTurn_ClientRPC(bool hostFirst)
+    {
+        TurnManager.hasTurn = hostFirst ? MultiplayManager._instance.isHost : !MultiplayManager._instance.isHost; ;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EndTurn_ServerRPC(ulong steamId)
+    {
+        ChangeTurn_ClientRPC(steamId);
+    }
+
+    [ClientRpc]
+    public void ChangeTurn_ClientRPC(ulong turnEnder)
+    {
+        if (SteamClient.SteamId != turnEnder) {
+            TurnManager.hasTurn = true;
+        }
+    }
+    */
 }

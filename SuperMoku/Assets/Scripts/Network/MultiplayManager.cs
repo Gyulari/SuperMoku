@@ -10,6 +10,7 @@ public class MultiplayManager : MonoBehaviour
 {
     public static MultiplayManager _instance = null;
 
+    #region Lobby Objects
     [SerializeField]
     private GameObject multiMenu, multiLobby;
 
@@ -27,9 +28,6 @@ public class MultiplayManager : MonoBehaviour
     [SerializeField]
     private GameObject readyButton, readyCancelButton, startButton;
 
-    // Client들의 정보를 담은 Dictionary
-    public Dictionary<ulong, GameObject> steamPlayerInfo = new Dictionary<ulong, GameObject>();
-
     [SerializeField]
     private int maxMessages = 20;
     private List<ChatMessage> chatMessageList = new List<ChatMessage>();
@@ -37,6 +35,10 @@ public class MultiplayManager : MonoBehaviour
     public bool isConnected;
     public bool isHost;
     public ulong ownClientId;
+    #endregion
+
+    // Client들의 정보를 담은 Dictionary
+    public Dictionary<ulong, GameObject> steamPlayerInfo = new Dictionary<ulong, GameObject>();
 
     // Singleton Pattern 구현
     void Awake()
@@ -50,6 +52,7 @@ public class MultiplayManager : MonoBehaviour
         }
     }
 
+    #region Chat
     private void Update()
     {
         // 채팅창이 비활성화 상태일 때
@@ -95,22 +98,6 @@ public class MultiplayManager : MonoBehaviour
         }
     }
 
-    public void HostCreated()
-    {
-        multiMenu.SetActive(false);
-        multiLobby.SetActive(true);
-        isHost = true;
-        isConnected = true;
-    }
-
-    public void ConnectedAsClient()
-    {
-        multiMenu.SetActive(false);
-        multiLobby.SetActive(true);
-        isHost = false;
-        isConnected = true;
-    }
-
     public class ChatMessage
     {
         public string text;
@@ -119,7 +106,7 @@ public class MultiplayManager : MonoBehaviour
 
     public void SendMessageToChat(string text, ulong sender, bool isServer)
     {
-        if(chatMessageList.Count >= maxMessages) {
+        if (chatMessageList.Count >= maxMessages) {
             Destroy(chatMessageList[0].textObject.gameObject);
             chatMessageList.Remove(chatMessageList[0]);
         }
@@ -146,11 +133,29 @@ public class MultiplayManager : MonoBehaviour
         chatMessageList.Clear();
         GameObject[] chat = GameObject.FindGameObjectsWithTag("ChatMessage");
 
-        foreach(GameObject c in chat) {
+        foreach (GameObject c in chat) {
             Destroy(c);
         }
 
         Debug.Log("clearing chat");
+    }
+    #endregion
+
+    #region Connecting
+    public void HostCreated()
+    {
+        multiMenu.SetActive(false);
+        multiLobby.SetActive(true);
+        isHost = true;
+        isConnected = true;
+    }
+
+    public void ConnectedAsClient()
+    {
+        multiMenu.SetActive(false);
+        multiLobby.SetActive(true);
+        isHost = false;
+        isConnected = true;
     }
 
     public void Disconnected()
@@ -167,7 +172,9 @@ public class MultiplayManager : MonoBehaviour
         isHost = false;
         isConnected = false;
     }
+    #endregion
 
+    #region PlayerInfo
     public void AddPlayerToSteamPlayerInfo(ulong clientId, string steamName, ulong steamId)
     {
         if (!steamPlayerInfo.ContainsKey(clientId)) {
@@ -206,7 +213,9 @@ public class MultiplayManager : MonoBehaviour
             Destroy(value);
         }
     }
+    #endregion
 
+    #region Ready
     public void SetReadyState(bool ready)
     {
         NetworkTransmission._instance.SetClientReadyState_ServerRPC(ready, ownClientId);
@@ -232,9 +241,11 @@ public class MultiplayManager : MonoBehaviour
 
         return ready;
     }
+    #endregion
 
     public void StartGameByHost()
     {
-        NetworkTransmission._instance.LoadScene_ServerRPC(2);
+        NetworkTransmission._instance.LoadScene_ServerRPC(3);
+        // GameManager._instance.InitGameSettings();
     }
 }

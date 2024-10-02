@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager _instance;
-    public static GameData m_GameData = new GameData();
+    // public static GameData m_GameData = new GameData();
 
     void Awake()
     {
@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(sceneNumber);
     }
 
+    /*
     public void SaveData()
     {
         IOUtil.ExportDataByJson<GameData>(m_GameData, "Data/GameData.json");
@@ -33,4 +34,10 @@ public class GameManager : MonoBehaviour
     {
         m_GameData = IOUtil.ImportDataByJson<GameData>("Data/GameData.json");
     }
+
+    public void InitGameSettings()
+    {
+        NetworkTransmission._instance.SetInitialTurn_ServerRPC();
+    }
+    */
 }

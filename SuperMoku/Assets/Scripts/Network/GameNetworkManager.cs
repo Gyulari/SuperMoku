@@ -191,8 +191,8 @@ public class GameNetworkManager : MonoBehaviour
     // 로비 생성 시 호출
     private void OnLobbyGameCreated(Lobby lobby, uint ip, ushort port, SteamId steamId)
     {
-        Debug.Log("Lobby was created");
-        MultiplayManager._instance.SendMessageToChat($"대기실을 생성했습니다.", NetworkManager.Singleton.LocalClientId, true);
+        Debug.Log("Game was created");
+        // MultiplayManager._instance.SendMessageToChat($"대기실을 생성했습니다.", NetworkManager.Singleton.LocalClientId, true);
     }
 
     // 플레이어가 로비 참여 요청을 보낼 시 호출되는 함수
